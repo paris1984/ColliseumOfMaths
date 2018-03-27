@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ColliseumOfMaths</string>
+    <string name="inicio">Comenzar</string>
+    <string name="opciones">Opciones</string>
+</resources>
