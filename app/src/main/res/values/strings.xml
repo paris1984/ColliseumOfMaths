@@ -2,4 +2,8 @@
     <string name="app_name">ColliseumOfMaths</string>
     <string name="inicio">Comenzar</string>
     <string name="opciones">Opciones</string>
+    <string name="guardar">Guardar</string>
+    <string name="nivel">Nivel</string>
+    <string name="facil">Facil</string>
+    <string name="normal">Normal</string>
 </resources>

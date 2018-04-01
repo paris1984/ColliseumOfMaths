@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -49,8 +50,9 @@ public class MainActivity extends AppCompatActivity {
         botonOpciones.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //MainActivity.this.startActivity(new Intent(MainActivity.this, ActividadJuego.class));
+                DialogFragment option = new OptionActivity();
+                option.show(getSupportFragmentManager(), "opciones");
+                
             }
         });
     }
