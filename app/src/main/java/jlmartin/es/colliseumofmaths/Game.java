@@ -25,7 +25,7 @@ import java.util.Iterator;
  */
 public class Game extends SurfaceView implements SurfaceHolder.Callback, SurfaceView.OnTouchListener {
     private SurfaceHolder holder;
-    public BucleJuego bucle;
+    public LoopGame bucle;
     private Activity actividad;
 
 
@@ -36,33 +36,34 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
     private static final String TAG = Game.class.getSimpleName();
 
     /*Array de Touch */
-    private ArrayList<Toque> toques = new ArrayList<Toque>();
+    private ArrayList<Touch> toques = new ArrayList<Touch>();
     boolean hayToque=false;
 
     private Bitmap fondo; //Bitmap auxiliar para cargar en el array los recursos
-    private static final int MAX_IMAGENES_FONDO= 6; //imagenes que componen el escenario
+    private static final int MAX_IMAGENES_FONDO= 1; //imagenes que componen el escenario
     Bitmap imagenes[]=new Bitmap[MAX_IMAGENES_FONDO]; // Arrays de imágenes
     /* Array de recursos que componen el escenario*/
-    int recursos_imagenes[]={R.drawable.bg1,R.drawable.bg2,R.drawable.bg3,
-                             R.drawable.bg4,R.drawable.bg5,R.drawable.bg6};
+    int recursos_imagenes[]={R.drawable.stonetile};
     //coordenadas y del fondo actual y del siguiente
     int yImgActual,yImgSiguiente;
 
     /*índices del array de imagenes para alternar el fondo*/
-    int img_actual=0,img_siguiente=1;
+    int img_actual=0;
 
 
     /* Controles */
     private final int IZQUIERDA=0;
     private final int DERECHA=1;
-    private final int DISPARO=2;
+    private final int ABAJO=2;
+    private final int ARRIBA=3;
+    private final int DISPARO=4;
 
     private final float VELOCIDAD_HORIZONTAL; //pixels por frame
-    Control controles[]=new Control[3];
+    Control controles[]=new Control[5];
 
     /* Enemigos */
-    Bitmap enemigo_tonto, enemigo_listo;
-    public final int TOTAL_ENEMIGOS=500; //Enemigos para acabar el juego
+    Bitmap enemigo_listo;
+    public final int TOTAL_ENEMIGOS=500; //Enemigos para acabar el Game
     private int enemigos_minuto=50; //número de enemigos por minuto
     private int frames_para_nuevo_enemigo=0; //frames que restan hasta generar nuevo enemigo
     private int enemigos_muertos=0; //Contador de enemigos muertos
@@ -73,7 +74,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
     private int Nivel=0;
     private int PUNTOS_CAMBIO_NIVEL=2000;
 
-    /* Fin de juego */
+    /* Fin de Game */
     private boolean victoria=false,derrota=false;
 
     /* Lista Enemigos */
@@ -84,8 +85,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
 
     Bitmap disparo;
     private int frames_para_nuevo_disparo=0;
-    //entre disparo y disparo deben pasar al menos MAX_FRAMES_ENTRE_DISPARO
-    private final int MAX_FRAMES_ENTRE_DISPARO=BucleJuego.MAX_FPS/4;  //4 disparos por segundo aprox.
+    //entre shot y shot deben pasar al menos MAX_FRAMES_ENTRE_DISPARO
+    private final int MAX_FRAMES_ENTRE_DISPARO=LoopGame.MAX_FPS/4;  //4 disparos por segundo aprox.
     private boolean nuevo_disparo=false;
 
     /*explosiones*/
@@ -117,7 +118,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
 
 
         /*Carga la nave*/
-        nave = BitmapFactory.decodeResource(getResources(), R.drawable.starship);
+        nave = BitmapFactory.decodeResource(getResources(), R.drawable.pj);
 
         /*Carga la explosión*/
         explosion=BitmapFactory.decodeResource(getResources(), R.drawable.explosion);
@@ -125,21 +126,21 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
         /*posición inicial de la Nave */
         xNave=AnchoPantalla/2-nave.getWidth()/2;//posición inicial de la Nave
         yNave=AltoPantalla/5*4;// posición fija a 4/5 de alto y la mitad de ancho
-        VELOCIDAD_HORIZONTAL=AnchoPantalla/SEGUNDOS_EN_RECORRER_PANTALLA_HORIZONTAL/BucleJuego.MAX_FPS;
+        VELOCIDAD_HORIZONTAL=AnchoPantalla/SEGUNDOS_EN_RECORRER_PANTALLA_HORIZONTAL/LoopGame.MAX_FPS;
         /* Inicialización de coordenadas de fondo (Se ejecuta primero actualizar()*/
         yImgActual=-1;
         yImgSiguiente=-AltoPantalla-1;
         CargaBackground();
         CargaControles();
         CargaEnemigos();
-        //carga disparo
+        //carga shot
         disparo = BitmapFactory.decodeResource(getResources(), R.drawable.shot);
         //listener para onTouch
         setOnTouchListener(this);
 
     }
     private void IniciarMusicaJuego(){
-        mediaPlayer = MediaPlayer.create(actividad, R.raw.juego);
+        mediaPlayer = MediaPlayer.create(actividad, R.raw.battle);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -150,24 +151,34 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
     }
     public void CargaEnemigos(){
         frames_para_nuevo_enemigo=bucle.MAX_FPS*60/enemigos_minuto;
-        enemigo_tonto = BitmapFactory.decodeResource(getResources(), R.drawable.enemigo_tonto);
-        enemigo_listo = BitmapFactory.decodeResource(getResources(), R.drawable.enemigo_listo);
+        enemigo_listo = BitmapFactory.decodeResource(getResources(), R.drawable.malo);
     }
 
     public void CargaControles(){
         float aux;
 
         //flecha_izda
-        controles[IZQUIERDA]=new Control(getContext(),0,AltoPantalla/5*4+nave.getHeight());
+        controles[IZQUIERDA]=new Control(getContext(),0,AltoPantalla/5*4+nave.getHeight()-50);
         controles[IZQUIERDA].Cargar( R.drawable.flecha_izda);
         controles[IZQUIERDA].nombre="IZQUIERDA";
         //flecha_derecha
         controles[DERECHA]=new Control(getContext(),
-                    controles[0].Ancho()+controles[0].coordenada_x+5,controles[0].coordenada_y);
+                    controles[IZQUIERDA].Ancho()+controles[IZQUIERDA].coordenada_x+5,controles[0].coordenada_y);
         controles[DERECHA].Cargar(R.drawable.flecha_dcha);
         controles[DERECHA].nombre="DERECHA";
+        //flecha_arriba
+        controles[ARRIBA]=new Control(getContext(),
+                controles[IZQUIERDA].Ancho()/2+controles[IZQUIERDA].coordenada_x,
+                   controles[IZQUIERDA].coordenada_y-80);
+        controles[ARRIBA].Cargar(R.drawable.flecha_arriba);
+        controles[ARRIBA].nombre="ARRIBA";
+        //flecha_abajo
+        controles[ABAJO]=new Control(getContext(),
+                controles[IZQUIERDA].Ancho()/2+controles[IZQUIERDA].coordenada_x,controles[IZQUIERDA].coordenada_y+80);
+        controles[ABAJO].Cargar(R.drawable.flecha_abajo);
+        controles[ABAJO].nombre="ABAJO";
 
-        //disparo
+        //shot
         aux=5.0f/7.0f*AnchoPantalla; //en los 5/7 del ancho
         controles[DISPARO]=new Control(getContext(),aux,controles[0].coordenada_y);
         controles[DISPARO].Cargar(R.drawable.disparo);
@@ -176,7 +187,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
 
     public void CargaBackground(){
         //cargamos todos los fondos en un array
-        for(int i=0;i<6;i++) {
+        for(int i=0;i<1;i++) {
             fondo = BitmapFactory.decodeResource(getResources(), recursos_imagenes[i]);
             if(imagenes[i]==null)
                 imagenes[i] = fondo.createScaledBitmap(fondo, AnchoPantalla, AltoPantalla, true);
@@ -197,7 +208,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
         getHolder().addCallback(this);
 
         // creamos el game loop
-        bucle = new BucleJuego(getHolder(), this);
+        bucle = new LoopGame(getHolder(), this);
 
         // Hacer la Vista focusable para que pueda capturar eventos
         setFocusable(true);
@@ -219,11 +230,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
             AnchoPantalla = display.getWidth();  // deprecated
             AltoPantalla = display.getHeight();  // deprecated
         }
-        Log.i(Juego.class.getSimpleName(), "alto:" + AltoPantalla + "," + "ancho:" + AnchoPantalla);
+        Log.i(Game.class.getSimpleName(), "alto:" + AltoPantalla + "," + "ancho:" + AnchoPantalla);
     }
 
     /**
-     * Este método actualiza el estado del juego. Contiene la lógica del videojuego
+     * Este método actualiza el estado del Game. Contiene la lógica del videojuego
      * generando los nuevos estados y dejando listo el sistema para un repintado.
      */
     public void actualizar() {
@@ -240,6 +251,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
             if (controles[DERECHA].pulsado) {
                 if (xNave < AnchoPantalla - nave.getWidth())
                     xNave = xNave + VELOCIDAD_HORIZONTAL;
+            }
+
+            if (controles[ARRIBA].pulsado) {
+                if (yNave > 0)
+                    yNave = yNave - VELOCIDAD_HORIZONTAL;
+            }
+
+            if (controles[ABAJO].pulsado) {
+                if (yNave < AltoPantalla - nave.getHeight())
+                    yNave = yNave + VELOCIDAD_HORIZONTAL;
             }
 
             /* Disparo */
@@ -288,7 +309,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
                 if (Colision(e, d)) {
                     /* Creamos un nuevo objeto explosión */
                     lista_explosiones.add(new Explosion(this,e.coordenada_x, e.coordenada_y));
-                    /* eliminamos de las listas tanto el disparo como el enemigo */
+                    /* eliminamos de las listas tanto el shot como el enemigo */
                     try {
                         it_enemigos.remove();
                         it_disparos.remove();
@@ -370,12 +391,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
 
             //dibujamos el fondo
             canvas.drawBitmap(imagenes[img_actual],0,yImgActual,null);
-            canvas.drawBitmap(imagenes[img_siguiente],0,yImgSiguiente,null);
+
 
             //Si ha ocurrido un toque en la pantalla "Touch", dibujar un círculo
             if(hayToque){
                 synchronized (this) {
-                    for (Toque t : toques) {
+                    for (Touch t : toques) {
                         canvas.drawCircle(t.x, t.y, 100, myPaint);
                         //canvas.drawText(t.index + "", t.x, t.y, myPaint2);
                     }
@@ -401,7 +422,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
 
             //dibuja los controles
             myPaint.setAlpha(200);
-            for(int i=0;i<3;i++){
+            for(int i=0;i<5;i++){
                 controles[i].Dibujar(canvas,myPaint);
             }
 
@@ -443,28 +464,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
 
     public void actualiza_fondo(){
         //nueva posición del fondo
-        yImgActual++;
-        yImgSiguiente++;
 
-        /*Si la imagen de fondo actual ya ha bajado completamente*/
-        if(yImgActual>AltoPantalla){
-
-            //Se actualiza la imagen actual a la siguiente del array de imagenes
-            if(img_actual==MAX_IMAGENES_FONDO-1)
-                img_actual=0;
-            else
-                img_actual++;
-
-            //Se actualiza la imagen siguiente
-            if(img_siguiente==MAX_IMAGENES_FONDO-1)
-                img_siguiente=0;
-            else
-                img_siguiente++;
-
-            //Nuevas coordenadas
-            yImgActual=0;
-            yImgSiguiente=-AltoPantalla;
-        }
     }
 
 
@@ -501,11 +501,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
                 hayToque=true;
 
                 synchronized(this) {
-                    toques.add(index, new Toque(index, x, y));
+                    toques.add(index, new Touch(index, x, y));
                 }
 
                 //se comprueba si se ha pulsado
-                for(int i=0;i<3;i++)
+                for(int i=0;i<5;i++)
                     controles[i].comprueba_pulsado(x,y);
                 break;
 
@@ -515,7 +515,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
                 }
 
                 //se comprueba si se ha soltado el botón
-                for(int i=0;i<3;i++)
+                for(int i=0;i<5;i++)
                     controles[i].comprueba_soltado(toques);
                 break;
 
@@ -525,7 +525,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
                 }
                 hayToque=false;
                 //se comprueba si se ha soltado el botón
-                for(int i=0;i<3;i++)
+                for(int i=0;i<5;i++)
                     controles[i].comprueba_soltado(toques);
                 break;
         }
@@ -540,7 +540,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
             imagenes[i].recycle();
         nave.recycle();
         enemigo_listo.recycle();
-        enemigo_tonto.recycle();
         disparo.recycle();
     }
 }

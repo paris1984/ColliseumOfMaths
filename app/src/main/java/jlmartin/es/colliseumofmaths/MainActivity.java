@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mediaPlayer.stop();mediaPlayer.reset();
-                //MainActivity.this.startActivity(new Intent(MainActivity.this, ActividadJuego.class));
+                MainActivity.this.startActivity(new Intent(MainActivity.this, GameActivity.class));
             }
         });
         botonOpciones.setOnClickListener(new View.OnClickListener() {
