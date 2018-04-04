@@ -249,21 +249,25 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
         /* Controles */
         if(!derrota) {
             if (controles[IZQUIERDA].pulsado) {
+                nave = BitmapFactory.decodeResource(getResources(), R.drawable.pj_izda);
                 if (xNave > 0)
                     xNave = xNave - VELOCIDAD_HORIZONTAL;
             }
 
             if (controles[DERECHA].pulsado) {
+                nave = BitmapFactory.decodeResource(getResources(), R.drawable.pj_drcha);
                 if (xNave < AnchoPantalla - nave.getWidth())
                     xNave = xNave + VELOCIDAD_HORIZONTAL;
             }
 
             if (controles[ARRIBA].pulsado) {
+                nave = BitmapFactory.decodeResource(getResources(), R.drawable.pj_arrba);
                 if (yNave > 0)
                     yNave = yNave - VELOCIDAD_HORIZONTAL;
             }
 
             if (controles[ABAJO].pulsado) {
+                nave = BitmapFactory.decodeResource(getResources(), R.drawable.pj);
                 if (yNave < AltoPantalla - nave.getHeight())
                     yNave = yNave + VELOCIDAD_HORIZONTAL;
             }
