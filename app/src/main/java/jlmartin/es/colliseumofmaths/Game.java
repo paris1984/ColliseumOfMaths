@@ -63,7 +63,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
 
     /* Enemigos */
     Bitmap enemigo_listo;
-    public final int TOTAL_ENEMIGOS=500; //Enemigos para acabar el Game
+    //public int total_enemigos; //Enemigos para acabar el Game
     private int enemigos_minuto=50; //número de enemigos por minuto
     private int frames_para_nuevo_enemigo=0; //frames que restan hasta generar nuevo enemigo
     private int enemigos_muertos=0; //Contador de enemigos muertos
@@ -73,6 +73,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
     private int Puntos=0;
     private int Nivel=0;
     private int PUNTOS_CAMBIO_NIVEL=2000;
+
+    private Boolean dificil=false;
+    private Ecuacion ecuacion;
 
     /* Fin de Game */
     private boolean victoria=false,derrota=false;
@@ -115,6 +118,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
         IniciarMusicaJuego();
 
         CalculaTamañoPantalla();
+
+        ecuacion = new CalculoEcuaciones(dificil).generarEcuacion();
 
 
         /*Carga la nave*/
@@ -319,9 +324,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
 
                     /*Puntos*/
                     if(e.tipo_enemigo==e.ENEMIGO_INTELIGENTE)
-                        Puntos+=50;
+                        Puntos+=1;
                     else
-                        Puntos+=10;
+                        Puntos+=1;
                 }
             }
         }
@@ -354,7 +359,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
         }
 
         if(!derrota)
-            if(enemigos_muertos==TOTAL_ENEMIGOS)
+            if(enemigos_muertos==ecuacion.resultado)
                 victoria=true;
 
     }
@@ -382,8 +387,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
         if(canvas!=null) {
             //pinceles
             Paint myPaint = new Paint();
-            myPaint.setStyle(Paint.Style.STROKE);
-            myPaint.setColor(Color.WHITE);
+            myPaint.setStyle(Paint.Style.FILL);
+            myPaint.setColor(Color.BLACK);
 
             Paint myPaint2 = new Paint();
             myPaint2.setStyle(Paint.Style.FILL);
@@ -429,7 +434,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
             //escribe los puntos
             myPaint.setTextSize(AnchoPantalla/25); //25 es el número de letras aprox que sale en una línea
             canvas.drawText("PUNTOS " + Puntos + " - Nivel " + Nivel, 50, 50, myPaint);
-            canvas.drawText("Enemigos por matar "+(TOTAL_ENEMIGOS-enemigos_muertos), 50, 100, myPaint);
+            canvas.drawText(ecuacion.toString(), 50, 100, myPaint);
 
             if(victoria){
                 myPaint.setAlpha(0);
@@ -456,7 +461,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
     }
 
     public void CrearNuevoEnemigo(){
-        if(TOTAL_ENEMIGOS-enemigos_creados>0) {
+        if(ecuacion.resultado-enemigos_creados>0) {
             lista_enemigos.add(new Enemigo(this, Nivel));
             enemigos_creados++;
         }
