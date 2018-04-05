@@ -1,5 +1,6 @@
 package jlmartin.es.colliseumofmaths;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
@@ -10,19 +11,20 @@ import android.util.Log;
  */
 public class Disparo {
     public float coordenada_x, coordenada_y; //coordenadas donde se dibuja el control
-    private Game Game;
+    Bitmap disparo;
+
     private float velocidad;
     private Integer contador = 0;
     private MediaPlayer mediaPlayer; //para reproducir el sonido de shot
     private final float MAX_SEGUNDOS_EN_CRUZAR_PANTALLA=3;
     /*Constructor con coordenadas iniciales y número de shot*/
-    public Disparo(Game j,float x, float y){
-        Game=j;
+    public Disparo(Game g,Bitmap j,float x, float y){
+        disparo=j;
         coordenada_x=x;
-        coordenada_y=y-j.disparo.getHeight()+15;
-        velocidad=j.AltoPantalla/MAX_SEGUNDOS_EN_CRUZAR_PANTALLA/LoopGame.MAX_FPS; //adaptar velocidad al tamaño de pantalla
+        coordenada_y=y-disparo.getHeight()+15;
+        velocidad=g.AltoPantalla/MAX_SEGUNDOS_EN_CRUZAR_PANTALLA/LoopGame.MAX_FPS; //adaptar velocidad al tamaño de pantalla
         Log.i(Game.class.getSimpleName(),"Velocidad de shot: " + velocidad);
-        mediaPlayer=MediaPlayer.create(j.getContext(), R.raw.disparo);
+        mediaPlayer=MediaPlayer.create(g.getContext(), R.raw.disparo);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -35,21 +37,34 @@ public class Disparo {
 
 
     //se actualiza la coordenada y nada más
-    public void ActualizaCoordenadas(){
-        coordenada_y-=velocidad;
+    public void ActualizaCoordenadas(String direccion){
+        switch (direccion){
+            case "ARRIBA":
+                coordenada_y-=velocidad;
+                break;
+            case "ABAJO":
+                coordenada_y+=velocidad;
+                break;
+            case "DERECHA":
+                coordenada_x+=velocidad;
+                break;
+            case "IZQUIERDA":
+                coordenada_x-=velocidad;
+                break;
+        }
         contador++;
     }
 
     public void Dibujar(Canvas c, Paint p) {
-        c.drawBitmap(Game.disparo, coordenada_x, coordenada_y, p);
+        c.drawBitmap(disparo, coordenada_x, coordenada_y, p);
     }
 
     public int Ancho(){
-        return Game.disparo.getWidth();
+        return disparo.getWidth();
     }
 
     public int Alto(){
-        return Game.disparo.getHeight();
+        return disparo.getHeight();
     }
 
     public boolean FueraDePantalla() {
