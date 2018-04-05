@@ -12,7 +12,7 @@ public class Enemigo {
     public final int ENEMIGO_INTELIGENTE=0; //enemigo que sigue a la nave
     public final int enemigo_listo=1;       //enemigo que se mueve aleatoriamente
 
-    public final float VELOCIDAD_ENEMIGO_INTELIGENTE=5;
+    public final float VELOCIDAD_ENEMIGO_INTELIGENTE=3;
     public final float VELOCIDAD_ENEMIGO_TONTO=2;
     public float velocidad;
 
@@ -65,23 +65,25 @@ public class Enemigo {
     public void CalculaCoordenadas(){
         double x; //aleatorio
         /* Posicionamiento del enemigo */
-        //entre 0 y 0.125 sale por la izquierda (x=0, y=aleatorio(1/5) pantalla)
-        //entre 0.125 y 0.25 sale por la derecha (x=AnchoPantalla-anchobitmap, y=aleatorio(1/5))
-        //>0.25 sale por el centro (y=0, x=aleatorio entre 0 y AnchoPantalla-AnchoBitmap)
+
+        //dividimos la probabilidad para que salga entre los 3 lados de la pantalla (arriba, derecha o izda)
 
         x=Math.random();
 
-        if(x<=0.25){
-            //25% de probabilidad de que el enemigo salga por los lados
-            if(x<0.125) //sale por la izquierda
-                coordenada_x = 0;
-            else
-                coordenada_x = juego.AnchoPantalla-juego.enemigo_listo.getWidth();
-            coordenada_y = (int) (Math.random()*juego.AltoPantalla/5);
-        }else{
-            coordenada_x=(int)(Math.random()* (juego.AnchoPantalla-juego.enemigo_listo.getWidth()));
+        if(x<=0.20){
+            //sale por abajo
+            coordenada_x = (int)(Math.random()* (juego.AnchoPantalla-juego.enemigo_listo.getWidth()));
+            coordenada_y=juego.AltoPantalla-juego.enemigo_listo.getHeight();
 
-            coordenada_y=0;
+        }else if(x>0.20 && x<=0.60){
+            //sale por la izda
+            coordenada_x=0;
+            coordenada_y = (int)(Math.random()* (juego.AltoPantalla-juego.enemigo_listo.getHeight()));
+
+        }else{
+            //sale por la derecha
+            coordenada_x=juego.AnchoPantalla-juego.enemigo_listo.getWidth();
+            coordenada_y = (int)(Math.random()* (juego.AltoPantalla-juego.enemigo_listo.getHeight()));
         }
     }
 
