@@ -6,17 +6,14 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Build;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,16 +21,18 @@ public class MainActivity extends AppCompatActivity {
     int AltoPantalla;
     int AnchoPantalla;
     Button botonJuego;
-    Button botonOpciones;
+    CheckBox dificil;
     ImageView titulo;
     MediaPlayer mediaPlayer;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         botonJuego = findViewById(R.id.comenzar);
-        botonOpciones = findViewById(R.id.opciones);
+        dificil = findViewById(R.id.dificil);
         titulo = findViewById(R.id.titulo);
 
         CalculaTamañoPantalla();
@@ -44,17 +43,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mediaPlayer.stop();mediaPlayer.reset();
-                MainActivity.this.startActivity(new Intent(MainActivity.this, GameActivity.class));
+                Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                intent.putExtra("dificil",dificil.isChecked());
+                MainActivity.this.startActivity(intent);
             }
         });
-        botonOpciones.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogFragment option = new OptionActivity();
-                option.show(getSupportFragmentManager(), "opciones");
-                
-            }
-        });
+
     }
 
     //metodos publicos
@@ -94,10 +88,10 @@ public class MainActivity extends AppCompatActivity {
             }
             AnimatorSet animadorBoton1 = new AnimatorSet();
 
-            ObjectAnimator trasladar1 = ObjectAnimator.ofFloat(botonOpciones, "translationX", -800, 0);
-            System.out.println(botonOpciones.getWidth() + ":" + AnchoPantalla);
+            ObjectAnimator trasladar1 = ObjectAnimator.ofFloat(dificil, "translationX", -800, 0);
+            System.out.println(dificil.getWidth() + ":" + AnchoPantalla);
             trasladar1.setDuration(3000);
-            ObjectAnimator fade1 = ObjectAnimator.ofFloat(botonOpciones, "alpha", 0f, 1f);
+            ObjectAnimator fade1 = ObjectAnimator.ofFloat(dificil, "alpha", 0f, 1f);
             fade1.setDuration(3000);
             animadorBoton1.play(trasladar1).with(fade1);
             animadorBoton1.start();

@@ -19,13 +19,13 @@ public class CalculoEcuaciones {
         Ecuacion ecuacion = new Ecuacion();
         if(!dificil) {
 
-            ecuacion.operador1 = aleatorio.nextInt(10);
-            ecuacion.operador2 = aleatorio.nextInt(10);
+            ecuacion.operador1 = aleatorio.nextInt(10)+1;
+            ecuacion.operador2 = aleatorio.nextInt(10)+1;
             ecuacion.simbolo = "+";
             ecuacion.calcularResultado();
         }else{
             ecuacion.operador1 = aleatorio.nextInt(50)+50;
-            ecuacion.operador2 = aleatorio.nextInt(3);
+            ecuacion.operador2 = aleatorio.nextInt(3)+1;
             ecuacion.simbolo = "*";
             ecuacion.calcularResultado();
         }

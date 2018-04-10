@@ -4,6 +4,10 @@
     <string name="opciones">Opciones</string>
     <string name="guardar">Guardar</string>
     <string name="nivel">Nivel</string>
-    <string name="facil">Facil</string>
-    <string name="normal">Normal</string>
+    <string name="dificil">Dificil</string>
+    <string name="dificultad">Dificultad</string>
+    <string-array name="niveles">
+        <item>Facil</item>
+        <item>Normal</item>
+    </string-array>
 </resources>

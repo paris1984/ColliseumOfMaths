@@ -9,12 +9,14 @@ import android.view.WindowManager;
 public class GameActivity extends AppCompatActivity {
 
     Game j;
+    Boolean dificil;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        j=new Game(this);
+        j=new Game(this,getIntent().getExtras().getBoolean("dificil"));
         hideSystemUI();
         setContentView(j);
+
     }
 
     private void hideSystemUI() {

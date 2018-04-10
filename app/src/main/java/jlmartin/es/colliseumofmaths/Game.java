@@ -72,7 +72,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
     /*Puntos */
     private int Puntos = 0;
     private int Nivel = 0;
-    private int PUNTOS_CAMBIO_NIVEL = 2000;
+    private int PUNTOS_CAMBIO_NIVEL = 10;
 
     private Boolean dificil = false;
     private Ecuacion ecuacion;
@@ -110,7 +110,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
     /* sonidos */
     MediaPlayer mediaPlayer; //para reproducir la música de fondo
 
-    public Game(Activity context) {
+    public Game(Activity context,Boolean dificil) {
         super(context);
         actividad = context;
         holder = getHolder();
@@ -119,7 +119,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
         IniciarMusicaJuego();
 
         CalculaTamañoPantalla();
-
+        this.dificil = dificil;
         ecuacion = new CalculoEcuaciones(dificil).generarEcuacion();
         cron.start();
 
@@ -350,7 +350,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
         //cada PUNTOS_CAMBIO_NIVEL puntos se incrementa la dificultad
         if (Nivel != Puntos / PUNTOS_CAMBIO_NIVEL) {
             Nivel = Puntos / PUNTOS_CAMBIO_NIVEL;
-            enemigos_minuto += (20 * Nivel);
+            enemigos_minuto += (dificil?30:20 * Nivel);
         }
 
         if (!derrota && !victoria)
@@ -495,7 +495,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Surface
 
     public void CrearNuevoEnemigo() {
 
-        lista_enemigos.add(new Enemigo(this, Nivel));
+        lista_enemigos.add(new Enemigo(this, Nivel,dificil));
         enemigos_creados++;
 
     }

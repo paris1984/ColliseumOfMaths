@@ -24,18 +24,21 @@ public class Enemigo {
     
     private int Nivel;
 
+    private Boolean dificil;
+
     private Game juego;
 
 
-    public Enemigo(Game j, int n){
+    public Enemigo(Game j, int n,Boolean dificil){
         juego=j;
         Nivel=n;
+        this.dificil = dificil;
 
         //20 segundos en cruzar * factor de inteligencia y nivel
         float VELOCIDAD_ENEMIGO=j.AltoPantalla/20f/LoopGame.MAX_FPS;
 
-        //probabilidad de enemigo tonto 80%, enemigo listo 20%
-        if(Math.random()>0.20) {
+        //nivel de dificultad
+        if(!dificil) {
             tipo_enemigo = enemigo_listo;
             velocidad = (VELOCIDAD_ENEMIGO_TONTO+Nivel)*VELOCIDAD_ENEMIGO;
             Log.i(Game.class.getSimpleName(),"Velocidad de los enemigos tontos "+velocidad);
